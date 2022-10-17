@@ -1,25 +1,28 @@
 import torch
 import collections
 
-class Hooks():
+
+class ModuleHook:
     def __init__(self) -> None:
-        self.activation = collections.defaultdict(dict)
-        self.input = collections.defaultdict(dict)
+        self._module_name = None
+        self._module_hook = None
+        self.hook_name = None
+        self.hook_data = collections.defaultdict(dict)
 
-    def _set_data(self, type, name, data):
-        self.__dict__[type][name]['data'] = data
-        self.__dict__[type][name]['shape'] = data.shape
-        # self.__dict__[type][name]['layer_type']
+    def __call__(self, layer_name=None, *args):
+        raise NotImplementedError("You need to implement __call__ method!")
+    
 
-    def get_activation(self, name):
-        def hook(model, input, output):
-            self._set_data('activation', name, output.detach())
-        return hook
 
-    def get_input(self, name):
-        def hook(model, input, output):
+class InputHook(ModuleHook):
+    def __init__(self) -> None:
+        super().__init__()
+        self.hook_name = "input"
+
+    def __call__(self, layer_name):
+        def _hook(model, input, output):
             try:
-                self._set_data('input', name, input.detach())
+                self.hook_data[layer_name] = input.detach()
             except AttributeError:
-                self._set_data('input', name, input[0])
-        return hook
+                self.hook_data[layer_name] = input[0]
+        return _hook
