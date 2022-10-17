@@ -33,7 +33,7 @@ class VIS():
         # df["x"] += m
 
         # Initialize the FacetGrid object
-        pal = sns.cubehelix_palette(x.shape[1], rot=-1.25, light=.7)
+        pal = sns.cubehelix_palette(x.shape[1], rot=-2.25, light=.7)
         g = sns.FacetGrid(df, row="g", hue="g", aspect=12,
                           height=.5, palette=pal)
         # g = sns.FacetGrid(df, row="g", hue="g", aspect=15, height=.5, palette=pal)
@@ -42,7 +42,7 @@ class VIS():
         g.map(sns.kdeplot, "x",
               bw_adjust=.5, clip_on=False,
               fill=True, alpha=1.0, linewidth=0.5)
-        g.map(sns.kdeplot, "x", clip_on=False, color="w", lw=0.1, bw_adjust=.5)
+        g.map(sns.kdeplot, "x", clip_on=False, color="w", lw=0.5, bw_adjust=.5)
 
         # passing color=None to refline() uses the hue mapping
         g.refline(y=0, linewidth=2, linestyle="-", color=None, clip_on=False)
