@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import torch
 
-import os 
+import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -24,7 +24,7 @@ class VIS():
         if isinstance(layer_data, torch.Tensor):
             x = self._tensor_preproc(layer_data)
         else:
-            x = layer_data    
+            x = layer_data
         g = np.tile([a for a in range(x.shape[1])], x.shape[0])
 
         print(len(g))
@@ -34,8 +34,8 @@ class VIS():
 
         # Initialize the FacetGrid object
         pal = sns.cubehelix_palette(x.shape[1], rot=-2.25, light=.7)
-        g = sns.FacetGrid(df, row="g", hue="g", aspect=12,
-                          height=.5, palette=pal)
+        g = sns.FacetGrid(df, row="g", hue="g", aspect=10,
+                          height=1.0, palette=pal)
         # g = sns.FacetGrid(df, row="g", hue="g", aspect=15, height=.5, palette=pal)
 
         # Draw the densities in a few steps
@@ -58,13 +58,14 @@ class VIS():
         g.map(label, "x")
 
         # Set the subplots to overlap
-        g.figure.subplots_adjust(top=0.01, bottom=-0.6, hspace=0.10)
+        g.figure.subplots_adjust(top=1.0, bottom=-100.0, hspace=0.0)
+        # g.figure.subplots_adjust(top=5, bottom=0, hspace=2)
 
         # Remove axes details that don't play well with overlap
         g.set_titles("")
-        g.set(yticks=[], ylabel="", xlabel=f"{layer_name}")
+        g.set(yticks=[], ylabel="", xlabel=f"layer {layer_name}")
         g.despine(bottom=True, left=True)
-        # g.fig.tight_layout(w_pad = 100)
+        g.fig.tight_layout(h_pad=0, w_pad=0)
         return g
 
 
