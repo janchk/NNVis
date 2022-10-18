@@ -130,4 +130,5 @@ dmypy.json
 
 # User-defined
 /vis/*.png
+/vis/pdfs
 /*.pdf

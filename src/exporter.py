@@ -1,12 +1,17 @@
+import os
+
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-from visualize import VIS
 
-def pdf_export(hook, filepath=None):
-    vis = VIS()
-    filepath = f"vis_{hook.name}-hook.pdf" if not filepath else filepath
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+def pdf_export(hook, plotter, filepath=None):
+    fpath = os.path.join(dir_path, "../vis/pdfs")
+    if not os.path.exists(fpath):
+        os.mkdir(fpath)
+    filepath = os.path.join(fpath, f"vis_{hook.name}-hook.pdf") if not filepath else filepath
+    
     with PdfPages(filepath) as pdfp:
         for i, m in enumerate(hook.hook_data.keys()):
-            # fig = plt.figure(i)
-            plot = vis.layer_ridge_plot(m, hook.hook_data[m])
+            plot = plotter(m, hook.hook_data[m])
             pdfp.savefig(plot.fig)

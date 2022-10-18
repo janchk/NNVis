@@ -1,4 +1,3 @@
-import torch
 import collections
 
 
@@ -11,7 +10,7 @@ class ModuleHook:
 
     def __call__(self, layer_name=None, *args):
         raise NotImplementedError("You need to implement __call__ method!")
-    
+
     def __repr__(self) -> str:
         return str(self.hook_data)
 
