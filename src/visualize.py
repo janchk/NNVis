@@ -18,14 +18,21 @@ class NVIS():
     def __init__(self,
                  plotter_name: str,
                  hook_names: list) -> None:
+
         for _hook in hook_names:
             if _hook not in hooks.__all__:
                 raise NotImplementedError
+
         if len(hook_names) > 1:
             raise NotImplementedError(
                 "Currently you can register only one hook at a time!")
+
+        if plotter_name not in Plotter().__all__:
+            raise NotImplementedError(
+                f"Implemented plotters are {[p for p in Plotter().__all__.keys()]}!")
+
         self.hook_names = hook_names
-        self.plotter_name = plotter_name
+        self.plotter = Plotter().__all__[plotter_name]
         self._hooks = [hooks.__dict__[name]() for name in self.hook_names]
 
     def __call__(self, model: torch.nn.Module) -> None:
@@ -33,6 +40,6 @@ class NVIS():
             hook_register(model, _hook)
 
     def export_pdf(self):
-        plotter = Plotter().layer_ridge_plot
+        plotter = self.plotter
         for _hook in self._hooks:
             pdf_export(_hook, plotter)

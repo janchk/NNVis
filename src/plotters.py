@@ -6,10 +6,15 @@ import pandas as pd
 import seaborn as sns
 import torch
 
+from utils import rename
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
-def _tensor_preproc(data):
+def tensor_preproc(data):
+    if not isinstance(data, torch.Tensor):
+        return data
+
     if len(data.shape) < 3:
         data = data.reshape(-1, 1)
     else:
@@ -20,17 +25,28 @@ def _tensor_preproc(data):
 
 class Plotter:
     def __init__(self):
-          pass
+        self.__all__ = {
+            self.layer_ridge_plot.__name__: self.layer_ridge_plot,
+            self.layer_violin_plot.__name__: self.layer_violin_plot
+        }
     
+    @rename("Violin")
     def layer_violin_plot(self, layer_name, layer_data):
-        raise NotImplementedError
+        x = tensor_preproc(layer_data)
 
+        g = plt.figure()
+        g.suptitle(f"Layer {layer_name}")
+        ax = g.add_subplot()
+        ax.set_xlabel("Distribution")
+        ax.set_ylabel("Channel")
+        sns.violinplot(data=x, inner='points', orient='h')
 
+        return g
+
+    @rename("Ridge")
     def layer_ridge_plot(self, layer_name, layer_data):
-        if isinstance(layer_data, torch.Tensor):
-            x = _tensor_preproc(layer_data)
-        else:
-            x = layer_data
+        x = tensor_preproc(layer_data)
+
         g = np.tile([a for a in range(x.shape[1])], x.shape[0])
 
         print(len(g))
@@ -79,5 +95,5 @@ if __name__ == "__main__":
     rs = np.random.RandomState(1979)
     _x = rs.randn(800)
     _x = _x.reshape((-1, 20))
-    plot = _vis.layer_ridge_plot(None, _x)
+    plot = _vis.layer_violin_plot(None, _x)
     plot.savefig(os.path.join(dir_path, "../vis/test.png"))

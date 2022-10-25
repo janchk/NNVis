@@ -12,7 +12,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 if __name__ == "__main__":
     cls = CLS()
     cls.eval()
-    nvis = NVIS("", ["InputHook"])
+    nvis = NVIS("Violin", ["OutputHook"])
     nvis(cls)
 
     data = torch.rand(1, 1, 28, 28)

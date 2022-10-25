@@ -11,7 +11,8 @@ model = Model()
 model.eval()
 
 # initialize visualizer object
-nvis = NVIS("", ["InputHook"])
+# Violin or Ridge
+nvis = NVIS("Violin", ["InputHook"])
 
 # register hooks for your model
 nvis(model)
