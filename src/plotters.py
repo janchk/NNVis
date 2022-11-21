@@ -1,4 +1,8 @@
 import os
+import sys
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(dir_path, '.'))
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,7 +12,6 @@ import torch
 
 from utils import rename
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 def tensor_preproc(data):
@@ -19,6 +22,7 @@ def tensor_preproc(data):
         data = data.reshape(-1, 1)
     else:
         data = data.reshape(-1, data.shape[1])
+    data = data.to(torch.device('cpu'))
     return data.detach()
         
 
