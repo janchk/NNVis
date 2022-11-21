@@ -1,4 +1,5 @@
 import os
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,12 +7,13 @@ import pandas as pd
 import seaborn as sns
 import torch
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(dir_path, '.'))
+
 import hooks
 from exporter import pdf_export
 from plotters import Plotter
 from register import hook_register
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 class NVIS():
