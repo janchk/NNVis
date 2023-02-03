@@ -39,11 +39,13 @@ class Plotter:
         x = tensor_preproc(layer_data)
 
         g = plt.figure()
+        if x.shape[-1] > 30:
+            g.set_figheight(x.shape[-1] * 0.3)
         g.suptitle(f"Layer {layer_name}")
         ax = g.add_subplot()
         ax.set_xlabel("Distribution")
         ax.set_ylabel("Channel")
-        sns.violinplot(data=x, inner='points', orient='h')
+        sns.violinplot(data=x, inner='points', orient='h', gridsize=1000, scale="area", width=1)
 
         return g
 

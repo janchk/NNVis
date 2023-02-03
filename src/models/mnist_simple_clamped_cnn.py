@@ -13,15 +13,15 @@ class CLS(nn.Module):
     class _conv_block_1(torch.nn.Sequential):
         def __init__(self):
             super().__init__()
-            self.conv2d_1 = nn.Conv2d(1, 10, kernel_size=5)
-            self.bn_1 = nn.BatchNorm2d(10)
+            self.conv2d_1 = nn.Conv2d(1, 50, kernel_size=5)
+            self.bn_1 = nn.BatchNorm2d(50)
             # self.relu_1 = nn.ReLU(True)
             self.maxpool_1 = nn.MaxPool2d(2)
 
     class _conv_block_2(torch.nn.Sequential):
         def __init__(self):
             super().__init__()
-            self.conv2d_1 = nn.Conv2d(10, 20, kernel_size=5)
+            self.conv2d_1 = nn.Conv2d(50, 20, kernel_size=5)
             self.bn_1 = nn.BatchNorm2d(20)
             # self.relu_1 = nn.ReLU(True)
             self.maxpool_1 = nn.MaxPool2d(2)
