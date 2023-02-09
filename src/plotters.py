@@ -2,7 +2,7 @@ import os
 import sys
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(dir_path, '.'))
+sys.path.append(os.path.join(dir_path, '..'))
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,7 +10,7 @@ import pandas as pd
 import seaborn as sns
 import torch
 
-from utils import rename
+from src.utils import rename
 
 
 
