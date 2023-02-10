@@ -10,7 +10,7 @@ def pdf_export(hook, plotter, fpath=None):
         fpath = os.path.join(dir_path, "../vis/pdfs")
     if not os.path.exists(fpath):
         os.mkdir(fpath)
-    filepath = os.path.join(fpath, f"vis_{hook.name}-{plotter.__name__.lower()}.pdf") if not filepath else filepath
+    filepath = os.path.join(fpath, f"vis_{hook.name}-{plotter.__name__.lower()}.pdf")
     
     with PdfPages(filepath) as pdfp:
         for i, m in enumerate(hook.hook_data.keys()):
