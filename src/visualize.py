@@ -1,3 +1,7 @@
+from register import hook_register, hook_unregister
+from plotters import Plotter
+from exporter import pdf_export, pdf_plot
+import hooks
 import os
 import sys
 
@@ -10,38 +14,45 @@ import torch
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, '.'))
 
-import hooks
-from exporter import pdf_export
-from plotters import Plotter
-from register import hook_register
-
 
 class NVIS():
-    def __init__(self,
-                 plotter_name: str,
-                 hook_names: list) -> None:
+    def __init__(self) -> None:
+        self.model: torch.nn.Module = None
+        self.plotter = Plotter()
+        self.plots = []
+        self.hook = None
 
-        for _hook in hook_names:
-            if _hook not in hooks.__all__:
-                raise NotImplementedError
+    def set_model(self, model: torch.nn.Module) -> None:
+        self.model = model
 
-        if len(hook_names) > 1:
-            raise NotImplementedError(
-                "Currently you can register only one hook at a time!")
+    def plot_weights_distributions(self):
+        self.plots = []
+        def filter(name): return name.find(".bn") == -1 and "bias" not in name
 
-        if plotter_name not in Plotter().__all__:
-            raise NotImplementedError(
-                f"Implemented plotters are {[p for p in Plotter().__all__.keys()]}!")
+        for name, weights in self.model.named_parameters():
+            if filter(name):
+                plot = self.plotter.layer_violin_plot(name, weights)
+                self.plots.append(plot)
 
-        self.hook_names = hook_names
-        self.plotter = Plotter().__all__[plotter_name]
-        self._hooks = [hooks.__dict__[name]() for name in self.hook_names]
+        pdf_plot(self.plots, "weights")
 
-    def __call__(self, model: torch.nn.Module) -> None:
-        for _hook in self._hooks:
-            hook_register(model, _hook)
+    def plot_activations_distributions(self, input_shape):
+        self.plots = []
+        data = torch.rand(input_shape)
+        self.hook = hooks.OutputHook()
+        handles = hook_register(self.model, self.hook)
 
-    def export_pdf(self):
-        plotter = self.plotter
-        for _hook in self._hooks:
-            pdf_export(_hook, plotter)
+        self.model(data)
+
+        for name in self.hook.hook_data.keys():
+            plot = self.plotter.layer_violin_plot(name, self.hook.hook_data[name])
+            self.plots.append(plot)
+
+        hook_unregister(handles)
+
+        pdf_plot(self.plots, "activations")
+
+    # def export_pdf(self):
+        # plotter = self.plotter
+        # for _hook in self._hooks:
+            # pdf_export(_hook, plotter)

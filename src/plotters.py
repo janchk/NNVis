@@ -45,7 +45,7 @@ class Plotter:
         ax = g.add_subplot()
         ax.set_xlabel("Distribution")
         ax.set_ylabel("Channel")
-        sns.violinplot(data=x, inner='points', orient='h', gridsize=1000, scale="area", width=1)
+        sns.violinplot(data=x, inner='points', orient='h',  gridsize=500, scale="width", width=1, cut=10)
 
         return g
 

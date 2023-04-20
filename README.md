@@ -1,7 +1,7 @@
 # NNVis
 #### *Simple utils for neural network visualization*
 ---
-Currently only layer activation distribution visualization functionality is available. 
+Currently weights distribution and activations distrubution are available. 
 ### API
 ```python
 # create your model
@@ -11,16 +11,16 @@ model = Model()
 model.eval()
 
 # initialize visualizer object
-# Violin or Ridge
-nvis = NVIS("Violin", ["InputHook"])
+nvis = NVIS()
 
-# register hooks for your model
-nvis(model)
+# set model to Nvis
+nvis.set_model(model)
 
-# make a forward-pass for your model
-model(data)
+# visualise weights distributions
+nvis.plot_weights_ditributions()
 
-# export visualized data
-nvis.export_pdf()
+# visualize activations distributions
+nvis.plot_activations_distributions((<input_shape>))
+
 ```
 *The visualization will be located under vis/pdfs directory*
