@@ -29,9 +29,9 @@ class NVIS():
         self.plots = []
         def filter(name): return name.find(".bn") == -1 and "bias" not in name
 
-        for name, weights in self.model.named_parameters():
-            if filter(name):
-                plot = self.plotter.layer_violin_plot(name, weights)
+        for _name, weights in self.model.named_parameters():
+            if filter(_name):
+                plot = self.plotter.layer_violin_plot(_name, weights)
                 self.plots.append(plot)
 
         pdf_plot(self.plots, f"weights_{name}")
@@ -44,8 +44,8 @@ class NVIS():
 
         self.model(data)
 
-        for name in self.hook.hook_data.keys():
-            plot = self.plotter.layer_violin_plot(name, self.hook.hook_data[name])
+        for _name in self.hook.hook_data.keys():
+            plot = self.plotter.layer_violin_plot(_name, self.hook.hook_data[_name])
             self.plots.append(plot)
 
         hook_unregister(handles)
