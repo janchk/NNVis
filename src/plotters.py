@@ -10,7 +10,7 @@ import pandas as pd
 import seaborn as sns
 import torch
 
-from src.utils import rename
+from utils import rename
 
 
 
