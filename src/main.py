@@ -13,4 +13,4 @@ if __name__ == "__main__":
     nvis = NVIS()
     nvis.set_model(cls)
     nvis.plot_weights_distributions()
-    nvis.plot_activations_distributions((1,1,28,28))
+    nvis.plot_random_activations_distributions((1,1,28,28))

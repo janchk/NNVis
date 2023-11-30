@@ -1,30 +1,16 @@
+from utils import rename, tensor_preproc
+import torch
+import seaborn as sns
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 import os
 import sys
 
+from typing import List
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, '..'))
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import torch
-
-from utils import rename
-
-
-
-def tensor_preproc(data):
-    if not isinstance(data, torch.Tensor):
-        return data
-
-    if len(data.shape) < 3:
-        data = data.reshape(-1, 1)
-    else:
-        data = data.reshape(-1, data.shape[1])
-    data = data.to(torch.device('cpu'))
-    return data.detach()
-        
 
 
 class Plotter:
@@ -33,7 +19,36 @@ class Plotter:
             self.layer_ridge_plot.__name__: self.layer_ridge_plot,
             self.layer_violin_plot.__name__: self.layer_violin_plot
         }
-    
+
+    @rename("Violin_batch")
+    def violin_batch_plot(self, df: pd.DataFrame):
+        height_mul = 0.3
+
+        g = plt.figure()
+        # g.suptitle("Avg distribution")
+        ax = g.add_subplot()
+        ax.set_xlabel("Distribution")
+        ax.set_ylabel("Layer name")
+        lcount = len(df.T)
+        figheight = lcount * height_mul
+        if figheight * 100 > 2 ** 16:  # 2**16 is a hard limit in matplotlib
+            split_step = int(np.floor((2 ** 16 / 100) / height_mul))
+            split = [a for a in range(0, lcount, split_step)]
+            part_df = [df.T[i:i+split_step].T for i in split]
+            for i, df_ in enumerate(part_df):
+                g.set_figheight(len(df_.T) * height_mul)
+                sns.violinplot(data=df_, inner='points', orient='h',
+                               gridsize=500, scale="width", width=1.5, cut=10)
+                plt.tight_layout()
+                plt.savefig(f"vis_act_{i}.png")
+        else:
+            sns.violinplot(data=df, inner='points', orient='h',
+                           gridsize=500, scale="width", width=1, cut=10)
+
+        # g.set_figheight(len(layers_data) * 0.3)
+        # sns.violinplot(data=layers_data,inner='points', orient='h',
+        #                gridsize=500, scale="width", width=1, cut=10)
+
     @rename("Violin")
     def layer_violin_plot(self, layer_name, layer_data):
         x = tensor_preproc(layer_data)
@@ -45,7 +60,8 @@ class Plotter:
         ax = g.add_subplot()
         ax.set_xlabel("Distribution")
         ax.set_ylabel("Channel")
-        sns.violinplot(data=x, inner='points', orient='h',  gridsize=500, scale="width", width=1, cut=10)
+        sns.violinplot(data=x, inner='points', orient='h',
+                       gridsize=500, scale="width", width=1, cut=10)
 
         return g
 
@@ -63,13 +79,13 @@ class Plotter:
         # Initialize the FacetGrid object
         pal = sns.cubehelix_palette(x.shape[1], rot=-2.25, light=.7)
         g = sns.FacetGrid(df, row="g", hue="g", aspect=10,
-                            height=1.0, palette=pal)
+                          height=1.0, palette=pal)
         # g = sns.FacetGrid(df, row="g", hue="g", aspect=15, height=.5, palette=pal)
 
         # Draw the densities in a few steps
         g.map(sns.kdeplot, "x",
-                bw_adjust=.5, clip_on=False,
-                fill=True, alpha=1.0, linewidth=0.5)
+              bw_adjust=.5, clip_on=False,
+              fill=True, alpha=1.0, linewidth=0.5)
         g.map(sns.kdeplot, "x", clip_on=False, color="w", lw=0.5, bw_adjust=.5)
 
         # passing color=None to refline() uses the hue mapping
@@ -95,6 +111,7 @@ class Plotter:
         g.despine(bottom=True, left=True)
         g.fig.tight_layout(h_pad=0, w_pad=0)
         return g
+
 
 if __name__ == "__main__":
     _vis = Plotter()

@@ -1,3 +1,3 @@
-__all__ = ["InputHook", "OutputHook"]
+__all__ = ["InputDataHook", "OutputDataHook"]
 
-from .hooks import InputHook, OutputHook
+from .hooks import InputDataHook, OutputDataHook
