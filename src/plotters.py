@@ -1,53 +1,56 @@
-from utils import rename, tensor_preproc
-import torch
-import seaborn as sns
-import pandas as pd
-import numpy as np
+from typing import List
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import torch
 import os
 import sys
-
-from typing import List
-
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, '..'))
+sys.path.append(os.path.join(dir_path, '.'))
 
+from src.utils import rename, tensor_preproc
 
 class Plotter:
-    def __init__(self):
+    def __init__(self, plot_path=None):
         self.__all__ = {
             self.layer_ridge_plot.__name__: self.layer_ridge_plot,
             self.layer_violin_plot.__name__: self.layer_violin_plot
         }
+        if plot_path is None:
+            self.save_path = os.path.join(dir_path, "../vis")
+        else:
+            self.save_path = plot_path
 
     @rename("Violin_batch")
-    def violin_batch_plot(self, df: pd.DataFrame):
-        height_mul = 0.3
-
+    def violin_batch_plot(self, df: pd.DataFrame, vis_name="", hscale=0.3):
         g = plt.figure()
         # g.suptitle("Avg distribution")
         ax = g.add_subplot()
         ax.set_xlabel("Distribution")
         ax.set_ylabel("Layer name")
         lcount = len(df.T)
-        figheight = lcount * height_mul
+        figheight = lcount * hscale
         if figheight * 100 > 2 ** 16:  # 2**16 is a hard limit in matplotlib
-            split_step = int(np.floor((2 ** 16 / 100) / height_mul))
+            split_step = int(np.floor((2 ** 16 / 100) / hscale))
             split = [a for a in range(0, lcount, split_step)]
             part_df = [df.T[i:i+split_step].T for i in split]
             for i, df_ in enumerate(part_df):
-                g.set_figheight(len(df_.T) * height_mul)
+                g.set_figheight(len(df_.T) * hscale)
                 sns.violinplot(data=df_, inner='points', orient='h',
                                gridsize=500, scale="width", width=1.5, cut=10)
                 plt.tight_layout()
-                plt.savefig(f"vis_act_{i}.png")
+                plt.savefig(os.path.join(self.save_path, f"vis_act_{vis_name}_{i}.png"))
         else:
             sns.violinplot(data=df, inner='points', orient='h',
                            gridsize=500, scale="width", width=1, cut=10)
 
-        # g.set_figheight(len(layers_data) * 0.3)
-        # sns.violinplot(data=layers_data,inner='points', orient='h',
-        #                gridsize=500, scale="width", width=1, cut=10)
+            g.set_figheight(lcount * hscale)
+            plt.tight_layout()
+            plt.savefig(os.path.join(self.save_path, f"vis_act_{vis_name}.png"))
+        
+        print(f"File saved at {self.save_path}")
 
     @rename("Violin")
     def layer_violin_plot(self, layer_name, layer_data):

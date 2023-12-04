@@ -2,23 +2,23 @@ import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from register import hook_register, hook_unregister
 from plotters import Plotter
 from exporter import pdf_export, pdf_plot 
-from utils import tensor_preproc, tensor_sample_preproc
+from src.utils import tensor_preproc, tensor_sample_preproc
 import hooks
-
+dir_path = os.path.dirname(os.path.realpath(__file__))
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import seaborn as sns
 import torch
 
 
 class NVIS():
     def __init__(self) -> None:
         self.model: torch.nn.Module = None
-        self.plotter = Plotter()
+        self.out_path  = os.path.join(dir_path, "../vis")
+        self.plotter = Plotter(plot_path=self.out_path)
         self.plots = []
         self.hook = None
         self.handles = None
+        self.vis_name = ""
 
     def set_model(self, model: torch.nn.Module) -> None:
         self.model = model
@@ -38,7 +38,18 @@ class NVIS():
         self.hook = hooks.OutputDataHook()
         self.handles = hook_register(self.model, self.hook)
     
+    def print_batch_dataframe(self, name=""):
+        lnames = [n for n in self.hook.hook_data.keys()]
+        ldata = [tensor_preproc(self.hook.hook_data[_name], True).numpy() for _name in lnames]
+
+        df = pd.DataFrame(ldata).T
+        df.columns = lnames
+
+        df.to_csv(os.path.join(f"{self.out_path}", f"dataframe_{name}.csv"))
+        
+    
     def batch_plot_tracking_activations(self, name=""):
+        self.vis_name = name
         lnames = [n for n in self.hook.hook_data.keys()]
         
         ldata = [tensor_sample_preproc(self.hook.hook_data[_name]).numpy() for _name in lnames]
@@ -46,7 +57,7 @@ class NVIS():
         df = pd.DataFrame(ldata).T
         df.columns = lnames
 
-        self.plotter.violin_batch_plot(df)
+        self.plotter.violin_batch_plot(df, name)
 
         hook_unregister(self.handles)
 

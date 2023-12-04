@@ -25,13 +25,11 @@ def tensor_sample_preproc(data_, nsamples=100):
 
     return sampled_distribution.flatten().cpu().detach()
 
-
 def tensor_preproc(data_, avg_batch=False):
     if not isinstance(data_, torch.Tensor):
         return data_
     if avg_batch:
-        data = torch.stack([data_[:, channel, :, :].mean(0).flatten()
-                           for channel in range(data_.shape[1])])
+        data = data_.mean((0, 1)).flatten() # mean per batch and per-channel
     else:
         data = torch.stack([data_[:, channel, :, :].flatten()
                            for channel in range(data_.shape[1])])
