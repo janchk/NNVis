@@ -1,3 +1,3 @@
-from .src.visualize import NVIS
+from .src.nnvis.visualize import NVIS
 
 __all__ = ["NVIS"]

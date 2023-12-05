@@ -7,10 +7,9 @@ import torch
 import os
 import sys
 dir_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(dir_path, '..'))
-sys.path.append(os.path.join(dir_path, '.'))
+sys.path.append(os.path.dirname(os.path.join(os.path.realpath(__file__), "../../")))
 
-from src.utils import rename, tensor_preproc
+from src.nnvis.utils import rename, tensor_preproc
 
 class Plotter:
     def __init__(self, plot_path=None):
@@ -19,7 +18,7 @@ class Plotter:
             self.layer_violin_plot.__name__: self.layer_violin_plot
         }
         if plot_path is None:
-            self.save_path = os.path.join(dir_path, "../vis")
+            self.save_path = os.path.join(dir_path, "../../vis")
         else:
             self.save_path = plot_path
 

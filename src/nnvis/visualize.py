@@ -1,8 +1,10 @@
-import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+import os, sys
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from register import hook_register, hook_unregister
 from plotters import Plotter
 from exporter import pdf_export, pdf_plot 
-from src.utils import tensor_preproc, tensor_sample_preproc
+# from src.utils import tensor_preproc, tensor_sample_preproc
+from src.nnvis.utils import tensor_preproc, tensor_sample_preproc
 import hooks
 dir_path = os.path.dirname(os.path.realpath(__file__))
 import matplotlib.pyplot as plt
@@ -11,14 +13,14 @@ import torch
 
 
 class NVIS():
-    def __init__(self) -> None:
+    def __init__(self, name="") -> None:
         self.model: torch.nn.Module = None
         self.out_path  = os.path.join(dir_path, "../vis")
         self.plotter = Plotter(plot_path=self.out_path)
         self.plots = []
         self.hook = None
         self.handles = None
-        self.vis_name = ""
+        self.vis_name = name
 
     def set_model(self, model: torch.nn.Module) -> None:
         self.model = model
@@ -38,18 +40,19 @@ class NVIS():
         self.hook = hooks.OutputDataHook()
         self.handles = hook_register(self.model, self.hook)
     
-    def print_batch_dataframe(self, name=""):
+    def print_batch_dataframe(self):
         lnames = [n for n in self.hook.hook_data.keys()]
         ldata = [tensor_preproc(self.hook.hook_data[_name], True).numpy() for _name in lnames]
 
         df = pd.DataFrame(ldata).T
         df.columns = lnames
 
-        df.to_csv(os.path.join(f"{self.out_path}", f"dataframe_{name}.csv"))
+        df.to_csv(os.path.join(f"{self.out_path}", f"dataframe_{self.vis_name}.csv"))
         
     
-    def batch_plot_tracking_activations(self, name=""):
-        self.vis_name = name
+    def batch_plot_tracking_activations(self, name=None):
+        if name is not None:
+            self.vis_name = name
         lnames = [n for n in self.hook.hook_data.keys()]
         
         ldata = [tensor_sample_preproc(self.hook.hook_data[_name]).numpy() for _name in lnames]
@@ -57,12 +60,12 @@ class NVIS():
         df = pd.DataFrame(ldata).T
         df.columns = lnames
 
-        self.plotter.violin_batch_plot(df, name)
+        self.plotter.violin_batch_plot(df, self.vis_name)
 
         hook_unregister(self.handles)
 
     
-    def plot_tracked_activations(self, name=""):
+    def plot_tracked_activations(self):
         self.plots = []
 
         for _name in self.hook.hook_data.keys():
@@ -71,7 +74,7 @@ class NVIS():
             plt.close()
         
         hook_unregister(self.handles)
-        pdf_plot(self.plots, f"activations_{name}")
+        pdf_plot(self.plots, f"activations_{self.vis_name}")
 
         
     def plot_avg_batch_activations_distributions(self, input_batch, name=""):
@@ -90,7 +93,7 @@ class NVIS():
         plt.savefig("activations_new.pdf")
         # pdf_plot(self.plots, f"activations_{name}")
 
-    def plot_random_activations_distributions(self, input_shape, name=""):
+    def plot_random_activations_distributions(self, input_shape):
         self.plots = []
         data = torch.rand(input_shape)
         self.hook = hooks.OutputDataHook()
@@ -104,7 +107,7 @@ class NVIS():
 
         hook_unregister(handles)
 
-        pdf_plot(self.plots, f"activations_{name}")
+        pdf_plot(self.plots, f"activations_{self.vis_name}")
 
 
     # def export_pdf(self):
