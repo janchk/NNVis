@@ -40,9 +40,12 @@ class NVIS():
         self.hook = hooks.OutputDataHook()
         self.handles = hook_register(self.model, self.hook)
     
-    def print_batch_dataframe(self):
+    def print_batch_dataframe(self, sampled=False):
         lnames = [n for n in self.hook.hook_data.keys()]
-        ldata = [tensor_preproc(self.hook.hook_data[_name], True).numpy() for _name in lnames]
+        if sampled:
+            ldata = [tensor_sample_preproc(self.hook.hook_data[_name]).numpy() for _name in lnames]
+        else:
+            ldata = [tensor_preproc(self.hook.hook_data[_name], True).numpy() for _name in lnames]
 
         df = pd.DataFrame(ldata).T
         df.columns = lnames
