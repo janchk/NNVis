@@ -9,7 +9,8 @@ import sys
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.dirname(os.path.join(os.path.realpath(__file__), "../../")))
 
-from src.nnvis.utils import rename, tensor_preproc
+# from nnvis.src.nnvis.utils import rename, tensor_preproc
+from utils import rename, tensor_preproc
 
 class Plotter:
     def __init__(self, plot_path=None):

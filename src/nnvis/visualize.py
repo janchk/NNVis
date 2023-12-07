@@ -3,8 +3,8 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from register import hook_register, hook_unregister
 from plotters import Plotter
 from exporter import pdf_export, pdf_plot 
-# from src.utils import tensor_preproc, tensor_sample_preproc
-from src.nnvis.utils import tensor_preproc, tensor_sample_preproc
+from utils import tensor_preproc, tensor_sample_preproc
+# from nnvis.src.nnvis.utils import tensor_preproc, tensor_sample_preproc
 import hooks
 dir_path = os.path.dirname(os.path.realpath(__file__))
 import matplotlib.pyplot as plt
