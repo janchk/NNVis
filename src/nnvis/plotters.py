@@ -3,14 +3,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import torch
 import os
 import sys
+from pathlib import Path
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.dirname(os.path.join(os.path.realpath(__file__), "../../")))
 
-# from nnvis.src.nnvis.utils import rename, tensor_preproc
-from utils import rename, tensor_preproc
+from nnvis.utils import rename, tensor_preproc
 
 class Plotter:
     def __init__(self, plot_path=None):
@@ -19,9 +18,11 @@ class Plotter:
             self.layer_violin_plot.__name__: self.layer_violin_plot
         }
         if plot_path is None:
-            self.save_path = os.path.join(dir_path, "../../vis")
+            self.save_path = "vis"
         else:
             self.save_path = plot_path
+        
+        Path(self.save_path).mkdir(parents=True, exist_ok=True)
 
     @rename("Violin_batch")
     def violin_batch_plot(self, df: pd.DataFrame, vis_name="", hscale=0.3):
@@ -122,4 +123,4 @@ if __name__ == "__main__":
     _x = rs.randn(800)
     _x = _x.reshape((-1, 20))
     plot = _vis.layer_violin_plot(None, _x)
-    plot.savefig(os.path.join(dir_path, "../vis/test.png"))
+    plot.savefig("vis/test.png")

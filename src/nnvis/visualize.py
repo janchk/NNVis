@@ -1,11 +1,10 @@
 import os, sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from register import hook_register, hook_unregister
-from plotters import Plotter
-from exporter import pdf_export, pdf_plot 
-from utils import tensor_preproc, tensor_sample_preproc
-# from nnvis.src.nnvis.utils import tensor_preproc, tensor_sample_preproc
-import hooks
+from nnvis.register import hook_register, hook_unregister
+from nnvis.plotters import Plotter
+from nnvis.exporter import pdf_export, pdf_plot 
+from nnvis.utils import tensor_preproc, tensor_sample_preproc
+from nnvis import hooks
 dir_path = os.path.dirname(os.path.realpath(__file__))
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -15,7 +14,7 @@ import torch
 class NVIS():
     def __init__(self, name="") -> None:
         self.model: torch.nn.Module = None
-        self.out_path  = os.path.join(dir_path, "../vis")
+        self.out_path  = "vis"
         self.plotter = Plotter(plot_path=self.out_path)
         self.plots = []
         self.hook = None
