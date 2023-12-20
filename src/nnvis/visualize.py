@@ -47,7 +47,7 @@ class NVIS():
             ldata = [tensor_preproc(self.hook.hook_data[_name], True).numpy() for _name in lnames]
 
         df = pd.DataFrame(ldata).T
-        df.columns = lnames
+        df.columns = [f"{name} [{self.model.get_submodule(name).__class__.__name__}]" for name in lnames] # extend text representation of a layer
 
         df.to_csv(os.path.join(f"{self.out_path}", f"dataframe_{self.vis_name}.csv"))
         
@@ -60,7 +60,7 @@ class NVIS():
         ldata = [tensor_sample_preproc(self.hook.hook_data[_name]).numpy() for _name in lnames]
 
         df = pd.DataFrame(ldata).T
-        df.columns = lnames
+        df.columns = [f"{name} [{self.model.get_submodule(name).__class__.__name__}]" for name in lnames] # extend text representation of a layer
 
         self.plotter.violin_batch_plot(df, self.vis_name)
 
