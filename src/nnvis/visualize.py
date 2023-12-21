@@ -35,9 +35,9 @@ class NVIS():
 
         pdf_plot(self.plots, f"weights_{name}")
 
-    def track_activations(self, exclude_layers=[]):
+    def track_activations(self, include_layers=[], exclude_layers=[]):
         self.hook = hooks.OutputDataHook()
-        self.handles = hook_register(self.model, self.hook, exclude_layers)
+        self.handles = hook_register(self.model, self.hook, include_layers, exclude_layers)
     
     def print_batch_dataframe(self, sampled=False):
         lnames = [n for n in self.hook.hook_data.keys()]
